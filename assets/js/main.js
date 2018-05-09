@@ -490,7 +490,7 @@ var parallelism = (function($) { var _ = {
 						overlayOpacity: _.settings.popupOverlayOpacity,
 						popupCloserText: 'X',
 						popupLoaderText: '',
-						selector: '.thumb a.image',
+						//selector: '.thumb a.image',
 						usePopupCaption: true,
 						usePopupCloser: true,
 						usePopupDefaultStyling: false,
