@@ -1,0 +1,25 @@
+title: Arman's technical blog
+author: Arman
+description: Notes on software engineering, systems, and things learned along the way.
+url: "https://dev.arman.ac"
+baseurl: ""
+lang: en
+timezone: America/Toronto
+theme: minima
+github_username: ArmanJR
+show_excerpts: true
+permalink: /posts/:title/
+header_pages:
+  - about.md
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+exclude:
+  - README.md
+  - tests
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
