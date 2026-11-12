@@ -8,6 +8,7 @@ import sys
 import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
+from html import unescape
 from html.parser import HTMLParser
 
 
@@ -42,7 +43,7 @@ def fetch(url, expected_status=200):
 def check(base):
     home = fetch(base + "/")
     page = Page(home)
-    assert "Arman's technical blog" in home, "Homepage title missing"
+    assert "Arman's technical blog" in unescape(home), "Homepage title missing"
     assert page.canonical == "https://dev.arman.ac/", "Incorrect canonical URL"
     assert "/about/" in page.links, "About navigation missing"
     assert "/feed.xml" in page.links, "RSS link missing"
