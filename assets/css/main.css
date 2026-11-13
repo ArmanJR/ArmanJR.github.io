@@ -1,10 +1,7 @@
 /*
  * dev.arman.ac
  *
- * The spectrum from arman.ac is used as an instrument, not a decoration:
- * each post's tick takes its hue from where it sits in time, and on a post
- * the spectrum fills as you read. Everything else stays quiet so the writing
- * and the code lead.
+ * Quiet by design, so the writing and the code lead.
  */
 
 /* ---------- Tokens ---------- */
@@ -21,8 +18,6 @@
   --ink-3: #6b6b6b;
   --rule: #e2e2e0;
   --accent: #2456d3;
-  --spec-s: 88%;
-  --spec-l: 47%;
 
   /* Syntax */
   --syn-comment: #8a8a86;
@@ -33,37 +28,27 @@
   --syn-type: #b23f12;
   --syn-builtin: #a3246f;
 
-  /* hue(p) = 20 + 300p: orange → yellow → green → blue → violet → magenta */
-  --spectrum: linear-gradient(
-    90deg,
-    hsl(20 var(--spec-s) var(--spec-l)),
-    hsl(80 var(--spec-s) var(--spec-l)) 20%,
-    hsl(140 var(--spec-s) var(--spec-l)) 40%,
-    hsl(200 var(--spec-s) var(--spec-l)) 60%,
-    hsl(260 var(--spec-s) var(--spec-l)) 80%,
-    hsl(320 var(--spec-s) var(--spec-l))
-  );
-
-  --measure: 41rem;
+  --measure: 44rem;
   --gutter: 7rem;
   --pad: 1.25rem;
+  /* Width reserved right of the layout for the sticky table of contents. */
+  --toc-width: 15.5rem;
 
   color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #000000;
-    --surface: #0d0d0d;
+    /* Near-black, not #000: pure black makes light text halate. */
+    --bg: #121212;
+    --surface: #1c1c1c;
     --ink: #ececec;
     --ink-2: #a6a6a6;
     --ink-3: #868686;
-    --rule: #1d1d1d;
+    --rule: #2a2a2a;
     --accent: #7aa2ff;
-    --spec-s: 100%;
-    --spec-l: 64%;
 
-    --syn-comment: #737373;
+    --syn-comment: #858585;
     --syn-keyword: #a99cff;
     --syn-string: #84dca2;
     --syn-number: #ffd970;
@@ -128,6 +113,12 @@ a:hover {
   text-decoration-color: currentColor;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -153,8 +144,10 @@ a:hover {
 
 /*
  * Every block is a three-column grid: a gutter on each side and the reading
- * measure in the middle. Prose sits in the measure; code, tables and figures
- * break out into the gutters, because code lines run longer than sentences.
+ * measure in the middle. Prose, code and tables sit in the measure; only
+ * figures break out into the gutters. On wide screens a post with a table of
+ * contents raises the right margin's minimum (--aside) so the TOC fits there;
+ * the content shifts left only as far as it has to.
  */
 .frame,
 .prose {
@@ -165,7 +158,7 @@ a:hover {
     [wide-start] minmax(0, var(--gutter))
     [text-start] min(var(--measure), 100% - 2 * var(--pad))
     [text-end] minmax(0, var(--gutter))
-    [wide-end] minmax(var(--pad), 1fr)
+    [wide-end] minmax(var(--aside, var(--pad)), 1fr)
     [full-end];
 }
 
@@ -262,28 +255,9 @@ a:hover {
 }
 
 .entry__date {
-  position: relative;
-  padding-left: 0.875rem;
   font: 400 0.8125rem/2.15 var(--font-mono);
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
-}
-
-/* The post's own colour, matching its line on the spectrum. */
-.entry__date::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.55em;
-  width: 2px;
-  height: 1.05em;
-  background: hsl(calc(20 + var(--p) * 300) var(--spec-s) var(--spec-l));
-  transition: height 0.2s ease;
-}
-
-.entry:hover .entry__date::before {
-  height: 1.6em;
-  top: 0.3em;
 }
 
 .entry__title {
@@ -380,30 +354,6 @@ a:hover {
   margin-bottom: 2.5rem;
 }
 
-/* Reading progress, drawn with the same spectrum. Pure CSS where supported. */
-.progress {
-  position: fixed;
-  inset: 0 0 auto;
-  height: 2px;
-  background: var(--spectrum);
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  z-index: 10;
-}
-
-@supports (animation-timeline: scroll()) {
-  .progress {
-    animation: progress linear both;
-    animation-timeline: scroll(root);
-  }
-}
-
-@keyframes progress {
-  to {
-    transform: scaleX(1);
-  }
-}
-
 /* ---------- Prose ---------- */
 
 .prose > * {
@@ -489,15 +439,36 @@ a:hover {
   color: var(--ink-3);
 }
 
+/* Set apart by a clear rule and a larger italic, not by dimming the text. */
 .prose blockquote {
-  margin-inline: 0;
-  padding-left: 1.25rem;
-  border-left: 2px solid var(--rule);
-  color: var(--ink-2);
+  margin: 0.75rem 0 2rem;
+  padding: 0.125rem 0 0.125rem 1.5rem;
+  border-left: 3px solid color-mix(in srgb, var(--ink) 35%, transparent);
+  color: var(--ink);
+  font-size: 1.125rem;
+  font-style: italic;
+  line-height: 1.65;
+}
+
+.prose blockquote p {
+  text-wrap: pretty;
+}
+
+.prose blockquote > * {
+  margin-block: 0 0.75rem;
 }
 
 .prose blockquote > :last-child {
   margin-bottom: 0;
+}
+
+/* Emphasis inside an italic quote flips back to roman. */
+.prose blockquote :is(em, i) {
+  font-style: normal;
+}
+
+.prose blockquote code {
+  font-style: normal;
 }
 
 .prose hr {
@@ -562,26 +533,176 @@ a:hover {
   font-size: 0.9375rem;
 }
 
-/* Table of contents: write `* TOC` then `{:toc}` in a post. */
-.prose #markdown-toc {
+/*
+ * Table of contents: write `* TOC` then `{:toc}` in a post. kramdown renders
+ * a plain list (styled below for when main.js doesn't run); main.js wraps it
+ * in .toc, which is a collapsible card in the text column and, on wide
+ * screens, a sticky sidebar that tracks the section being read.
+ */
+.prose > #markdown-toc {
   padding: 1rem 0 1rem 1.25rem;
   border-left: 2px solid var(--rule);
   list-style: none;
   font-size: 0.9375rem;
 }
 
-.prose #markdown-toc ul {
+.prose > #markdown-toc ul {
   list-style: none;
   padding-left: 1rem;
 }
 
-.prose #markdown-toc a {
+.prose > #markdown-toc a {
   color: var(--ink-2);
   text-decoration: none;
 }
 
-.prose #markdown-toc a:hover {
+.prose > #markdown-toc a:hover {
   color: var(--ink);
+}
+
+.prose > .toc {
+  margin-block: 0.5rem 2rem;
+}
+
+.toc__details {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+
+.toc__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  list-style: none;
+  font: 400 0.8125rem/1 var(--font-mono);
+  color: var(--ink-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.toc__summary::-webkit-details-marker {
+  display: none;
+}
+
+.toc__summary:hover {
+  color: var(--ink);
+}
+
+.toc__count {
+  margin-left: auto;
+  color: var(--ink-3);
+}
+
+/* Chevron: points down when closed, up when open. */
+.toc__summary::after {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-top: -0.2rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.toc__details[open] > .toc__summary::after {
+  margin-top: 0.2rem;
+  transform: rotate(225deg);
+}
+
+/* A rail on the left; the current section draws over it. */
+.toc .toc__list,
+.toc .toc__list ul,
+.toc .toc__list li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.toc .toc__list {
+  margin: 0 1rem 1rem;
+  border-left: 1px solid var(--rule);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.toc .toc__list a {
+  display: block;
+  margin-left: -1px;
+  padding: 0.35rem 0 0.35rem 1rem;
+  border-left: 2px solid transparent;
+  color: var(--ink-3);
+  text-decoration: none;
+  text-wrap: pretty;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.toc .toc__list ul a {
+  padding-left: 1.875rem;
+  font-size: 0.875rem;
+}
+
+.toc .toc__list a:hover {
+  color: var(--ink);
+}
+
+/* The section containing the current one is lifted a little too. */
+.toc .toc__list li:has([aria-current]) > a {
+  color: var(--ink-2);
+}
+
+.toc .toc__list a[aria-current] {
+  color: var(--ink);
+  border-left-color: var(--ink);
+}
+
+@media (min-width: 75rem) {
+  main:has(.toc) {
+    --aside: var(--toc-width);
+  }
+
+  /* main.js sets --toc-rows so the TOC's area runs to the end of the post. */
+  .prose > .toc {
+    grid-column: wide-end / full-end;
+    grid-row: span var(--toc-rows, 1);
+    align-self: start;
+    position: sticky;
+    top: 2.5rem;
+    z-index: 1;
+    max-width: calc(15rem + var(--pad));
+    max-height: calc(100vh - 5rem);
+    margin: 0;
+    padding-right: var(--pad);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  .toc__details {
+    border: 0;
+  }
+
+  .toc__summary {
+    padding: 0.35rem 0 0.75rem;
+    color: var(--ink-3);
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .toc__summary::after,
+  .toc__count {
+    display: none;
+  }
+
+  .toc .toc__list {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .toc .toc__list ul a {
+    font-size: 0.8125rem;
+  }
 }
 
 /* Tables */
@@ -652,10 +773,13 @@ pre {
   font-size: 0.8125em;
 }
 
-/* Grid items don't collapse margins, so the top margin stays small. */
+/*
+ * Code keeps the text column, like every other block; long lines scroll
+ * inside the block. Grid items don't collapse margins, so the top margin
+ * stays small.
+ */
 .prose .highlighter-rouge:has(pre),
 .prose > pre {
-  grid-column: wide;
   margin-block: 0.5rem 1.75rem;
 }
 
@@ -856,10 +980,6 @@ pre {
     line-height: 1.6;
   }
 
-  .entry__date::before {
-    top: 0.3em;
-  }
-
   .anchor {
     display: none;
   }
@@ -886,9 +1006,9 @@ pre {
 @media print {
   .site-head,
   .site-foot,
-  .progress,
   .code-bar,
   .anchor,
+  .toc,
   .pager {
     display: none;
   }

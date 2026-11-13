@@ -4,7 +4,6 @@ body_class: page page--post
 ---
 {%- assign words = content | strip_html | number_of_words %}
 {%- assign minutes = words | divided_by: 220 | at_least: 1 %}
-<div class="progress" aria-hidden="true"></div>
 <article class="article">
   <header class="article__head">
     <p class="article__meta">

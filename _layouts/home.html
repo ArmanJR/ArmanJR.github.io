@@ -2,28 +2,16 @@
 layout: default
 body_class: page page--home
 ---
-{%- comment -%}
-  Each post gets a position p in [0, 1] on a timeline running from the first
-  post to the build date. p picks the hue of the tick beside its date, so
-  older posts sit at the orange end of the spectrum and newer ones at the
-  magenta end.
-{%- endcomment -%}
 {%- assign posts = site.posts %}
 <h1 class="visually-hidden">{{ site.title | escape }}</h1>
 
 {%- if posts.size > 0 %}
-  {%- assign t_end = site.time | date: "%s" | plus: 0 %}
-  {%- assign t_start = posts.last.date | date: "%s" | plus: 0 %}
-  {%- assign span = t_end | minus: t_start %}
-  {%- if span < 1 %}{% assign span = 1 %}{% endif %}
 
 <ol class="entries" reversed>
   {%- for post in posts %}
-    {%- assign t = post.date | date: "%s" | plus: 0 %}
-    {%- assign p = t | minus: t_start | times: 0.96 | divided_by: span | plus: 0.02 | round: 4 %}
     {%- assign words = post.content | strip_html | number_of_words %}
     {%- assign minutes = words | divided_by: 220 | at_least: 1 %}
-  <li class="entry" style="--p: {{ p }}">
+  <li class="entry">
     <time class="entry__date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
     <div class="entry__body">
       <h2 class="entry__title"><a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h2>
