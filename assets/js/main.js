@@ -66,26 +66,6 @@
     }, 1600);
   }
 
-  // Hovering a post in the list lights its line on the spectrum, and back.
-  function linkSpectrum() {
-    var items = document.querySelectorAll(".entry[data-key], .spectrum__line[data-key]");
-    if (!items.length) return;
-
-    function set(key, on) {
-      document.querySelectorAll('[data-key="' + key + '"]').forEach(function (el) {
-        el.classList.toggle("is-lit", on);
-      });
-    }
-
-    items.forEach(function (el) {
-      var key = el.dataset.key;
-      el.addEventListener("mouseenter", function () { set(key, true); });
-      el.addEventListener("mouseleave", function () { set(key, false); });
-      el.addEventListener("focusin", function () { set(key, true); });
-      el.addEventListener("focusout", function () { set(key, false); });
-    });
-  }
-
   // Math, only on pages that loaded KaTeX (front matter `math: true`).
   function renderMath() {
     if (typeof window.renderMathInElement !== "function") return;
@@ -122,7 +102,6 @@
   document.addEventListener("DOMContentLoaded", function () {
     run("anchors", addAnchors);
     run("code bars", addCodeBars);
-    run("spectrum", linkSpectrum);
     run("math", renderMath);
   });
 })();

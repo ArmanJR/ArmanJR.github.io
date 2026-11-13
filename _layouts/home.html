@@ -4,13 +4,12 @@ body_class: page page--home
 ---
 {%- comment -%}
   Each post gets a position p in [0, 1] on a timeline running from the first
-  post to the build date. p places the post's line on the spectrum band and
-  picks its hue, so the band and the list below share one colour per post.
+  post to the build date. p picks the hue of the tick beside its date, so
+  older posts sit at the orange end of the spectrum and newer ones at the
+  magenta end.
 {%- endcomment -%}
 {%- assign posts = site.posts %}
-<section class="intro">
-  {{ content }}
-</section>
+<h1 class="visually-hidden">{{ site.title | escape }}</h1>
 
 {%- if posts.size > 0 %}
   {%- assign t_end = site.time | date: "%s" | plus: 0 %}
@@ -18,33 +17,13 @@ body_class: page page--home
   {%- assign span = t_end | minus: t_start %}
   {%- if span < 1 %}{% assign span = 1 %}{% endif %}
 
-<div class="spectrum" aria-hidden="true">
-  <div class="spectrum__band">
-    {%- for post in posts %}
-      {%- assign t = post.date | date: "%s" | plus: 0 %}
-      {%- assign p = t | minus: t_start | times: 0.96 | divided_by: span | plus: 0.02 | round: 4 %}
-    <a class="spectrum__line{% if p > 0.6 %} spectrum__line--end{% endif %}" href="{{ post.url | relative_url }}" tabindex="-1" style="--p: {{ p }}" data-key="{{ post.id | slugify }}">
-      <span class="spectrum__tip">{{ post.title | escape }}</span>
-    </a>
-    {%- endfor %}
-  </div>
-  {%- assign scale_start = posts.last.date | date: "%b %Y" %}
-  {%- assign scale_end = site.time | date: "%b %Y" %}
-  <div class="spectrum__scale">
-    <span>{{ scale_start }}</span>
-    {%- if scale_end != scale_start %}
-    <span>{{ scale_end }}</span>
-    {%- endif %}
-  </div>
-</div>
-
 <ol class="entries" reversed>
   {%- for post in posts %}
     {%- assign t = post.date | date: "%s" | plus: 0 %}
     {%- assign p = t | minus: t_start | times: 0.96 | divided_by: span | plus: 0.02 | round: 4 %}
     {%- assign words = post.content | strip_html | number_of_words %}
     {%- assign minutes = words | divided_by: 220 | at_least: 1 %}
-  <li class="entry" style="--p: {{ p }}" data-key="{{ post.id | slugify }}">
+  <li class="entry" style="--p: {{ p }}">
     <time class="entry__date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
     <div class="entry__body">
       <h2 class="entry__title"><a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h2>
