@@ -1,0 +1,39 @@
+---
+layout: default
+body_class: page page--post
+---
+{%- assign words = content | strip_html | number_of_words %}
+{%- assign minutes = words | divided_by: 220 | at_least: 1 %}
+<div class="progress" aria-hidden="true"></div>
+<article class="article">
+  <header class="article__head">
+    <p class="article__meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time>
+      <span aria-hidden="true">·</span>
+      <span>{{ minutes }} min read</span>
+    </p>
+    <h1 class="article__title">{{ page.title | escape }}</h1>
+    {%- if page.description %}
+    <p class="article__lede">{{ page.description | escape }}</p>
+    {%- endif %}
+  </header>
+  <div class="prose prose--post">
+    {{ content }}
+  </div>
+  {%- if page.previous or page.next %}
+  <nav class="pager" aria-label="More posts">
+    {%- if page.previous %}
+    <a class="pager__link" href="{{ page.previous.url | relative_url }}" rel="prev">
+      <span class="pager__label">← Older</span>
+      <span class="pager__title">{{ page.previous.title | escape }}</span>
+    </a>
+    {%- endif %}
+    {%- if page.next %}
+    <a class="pager__link pager__link--next" href="{{ page.next.url | relative_url }}" rel="next">
+      <span class="pager__label">Newer →</span>
+      <span class="pager__title">{{ page.next.title | escape }}</span>
+    </a>
+    {%- endif %}
+  </nav>
+  {%- endif %}
+</article>

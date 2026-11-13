@@ -5,7 +5,6 @@ url: "https://dev.arman.ac"
 baseurl: ""
 lang: en
 timezone: America/Toronto
-theme: minima
 github_username: ArmanJR
 show_excerpts: true
 permalink: /posts/:title/
@@ -23,3 +22,5 @@ defaults:
       type: posts
     values:
       layout: post
+kramdown:
+  toc_levels: 2..3

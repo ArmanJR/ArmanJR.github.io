@@ -1,13 +1,15 @@
 # Arman's technical blog
 
-A Markdown blog built by GitHub Pages with its supported Jekyll and Minima theme.
+A Markdown blog built by GitHub Pages with its supported Jekyll. The layouts,
+styles and script are custom and live in `_layouts/`, `_includes/` and `assets/`;
+there is no theme gem.
 
 Primary address: https://dev.arman.ac. GitHub Pages redirects
 https://armanjr.github.io to the custom domain once it is configured.
 
 ## Publish a post
 
-Create `_posts/YYYY-MM-DD-your-title.md` (create the directory for the first post):
+Create `_posts/YYYY-MM-DD-your-title.md`:
 
 ```markdown
 ---
@@ -22,6 +24,12 @@ Commit and push to `master`. GitHub Pages builds and publishes automatically.
 Posts appear on the homepage and in `/feed.xml`; code fences support syntax
 highlighting. Future-dated posts are not published until a build runs after their
 date. Dates use the America/Toronto timezone.
+
+`_posts/2026-11-13-hello-world.md` shows every element a post can use: a table of
+contents (`* TOC` followed by `{:toc}`), code blocks with a language, diffs, tables,
+footnotes, figures with captions, and math. Math needs `math: true` in the front
+matter, which loads KaTeX for that post only. Put a post's images in
+`assets/posts/<post-name>/`.
 
 Use `_drafts/first-post.md` as a writing template. Drafts are excluded from the
 published site, but remain visible in a public repository.

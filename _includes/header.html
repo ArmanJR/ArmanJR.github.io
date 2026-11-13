@@ -1,0 +1,17 @@
+<header class="site-head frame">
+  <div class="site-head__inner">
+    <a class="wordmark" href="{{ '/' | relative_url }}" aria-label="{{ site.title | escape }}, home">
+      <span class="wordmark__sub">dev.</span>arman.ac
+    </a>
+    <nav class="site-nav" aria-label="Site">
+      {%- for path in site.header_pages %}
+        {%- assign nav_page = site.pages | where: "path", path | first %}
+        {%- if nav_page.title %}
+      <a href="{{ nav_page.url | relative_url }}"{% if page.url == nav_page.url %} aria-current="page"{% endif %}>{{ nav_page.title | escape }}</a>
+        {%- endif %}
+      {%- endfor %}
+      <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+      <a href="https://arman.ac" rel="me">arman.ac&nbsp;<span aria-hidden="true">↗</span></a>
+    </nav>
+  </div>
+</header>
