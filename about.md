@@ -4,7 +4,8 @@ title: About
 permalink: /about/
 ---
 
-I'm Arman. This is my technical blog: a place for notes on software engineering,
-systems, and things I learn while building.
+I'm Arman Nejad (AKA Arman Jafarnezhad).
+I am a Software Engineer, living in Toronto.
 
-Find my projects on [GitHub](https://github.com/ArmanJR).
+- My personal website: [arman.ac](https://arman.ac)
+- Find my projects on [GitHub](https://github.com/ArmanJR)

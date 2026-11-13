@@ -1,4 +1,4 @@
 ---
 layout: home
-title: Posts
+title: Arman's Blog
 ---
