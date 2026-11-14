@@ -1,0 +1,9 @@
+---
+layout: null
+---
+# All crawlers, including AI agents, are welcome.
+# Markdown copies of every post are listed in {{ '/llms.txt' | absolute_url }}
+User-agent: *
+Allow: /
+
+Sitemap: {{ '/sitemap.xml' | absolute_url }}

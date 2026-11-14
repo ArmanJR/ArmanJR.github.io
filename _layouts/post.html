@@ -10,6 +10,10 @@ body_class: page page--post
       <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time>
       <span aria-hidden="true">·</span>
       <span>{{ minutes }} min read</span>
+      {%- if page.markdown_url %}
+      <span aria-hidden="true">·</span>
+      <a href="{{ page.markdown_url | relative_url }}" type="text/markdown">Markdown</a>
+      {%- endif %}
     </p>
     <h1 class="article__title">{{ page.title | escape }}</h1>
     {%- if page.description %}

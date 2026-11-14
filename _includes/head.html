@@ -6,6 +6,9 @@
   <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
   {%- seo -%}
   {%- feed_meta %}
+  {%- if page.markdown_url %}
+  <link rel="alternate" type="text/markdown" href="{{ page.markdown_url | relative_url }}" title="Markdown version">
+  {%- endif %}
   <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

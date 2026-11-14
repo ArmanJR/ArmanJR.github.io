@@ -1,0 +1,19 @@
+---
+layout: null
+---
+# {{ site.title }}
+
+> {{ site.description }}
+
+Technical writing by {{ site.author }}. Every post has a plain Markdown copy, linked below; [llms-full.txt]({{ '/llms-full.txt' | absolute_url }}) contains all of them in one file, newest first.
+
+## Posts
+{% for post in site.posts %}
+- [{{ post.title }}]({{ post.markdown_url | absolute_url }}): {% if post.description %}{{ post.description }} {% endif %}({{ post.date | date: "%Y-%m-%d" }})
+{%- endfor %}
+
+## Optional
+
+- [About the author]({{ '/about/' | absolute_url }})
+- [Atom feed]({{ '/feed.xml' | absolute_url }}): latest posts with full HTML content
+- [Sitemap]({{ '/sitemap.xml' | absolute_url }})

@@ -17,6 +17,7 @@ class Page(HTMLParser):
         super().__init__()
         self.links = []
         self.canonical = None
+        self.markdown = None
         self.feed(html)
 
     def handle_starttag(self, tag, attrs):
@@ -25,6 +26,8 @@ class Page(HTMLParser):
             self.links.append(attrs.get("href"))
         if tag == "link" and attrs.get("rel") == "canonical":
             self.canonical = attrs.get("href")
+        if tag == "link" and attrs.get("type") == "text/markdown":
+            self.markdown = attrs.get("href")
 
 
 def fetch(url, expected_status=200):
@@ -55,9 +58,45 @@ def check(base):
     assert "Your first post" not in ET.tostring(feed, encoding="unicode")
     missing = fetch(base + "/missing-smoke-test-page/", 404)
     assert "Return to the blog" in missing, "Custom 404 page missing"
-    for path in ("/_drafts/first-post.md", "/README.md", "/tests/check_site.py"):
+    for path in (
+        "/_drafts/first-post.md",
+        "/README.md",
+        "/tests/check_site.py",
+        "/Gemfile",
+        "/_plugins/agent_markdown.rb",
+    ):
         fetch(base + path, 404)
-    print(f"PASS: homepage, navigation, RSS, 404, and exclusions at {base}")
+    check_agent_files(base, page)
+    print(
+        f"PASS: homepage, navigation, RSS, 404, exclusions, and agent files at {base}"
+    )
+
+
+def check_agent_files(base, home):
+    robots = fetch(base + "/robots.txt")
+    assert "User-agent: *\nAllow: /" in robots, "robots.txt does not allow crawlers"
+    assert "Sitemap: https://dev.arman.ac/sitemap.xml" in robots, "Sitemap missing"
+    sitemap = ET.fromstring(fetch(base + "/sitemap.xml"))
+    ns = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
+    locs = [loc.text for loc in sitemap.iter(ns + "loc")]
+    assert "https://dev.arman.ac/" in locs, "Homepage missing from sitemap"
+
+    llms = fetch(base + "/llms.txt")
+    assert llms.startswith("# Arman's technical blog\n"), "llms.txt title missing"
+    assert "/llms.txt" in home.links, "llms.txt link missing"
+    full = fetch(base + "/llms-full.txt")
+    for text in (llms, full):
+        assert "Your first post" not in text, "Draft appears in llms.txt files"
+
+    posts = [link for link in home.links if link.startswith("/posts/")]
+    for post in posts:
+        markdown_url = Page(fetch(base + post)).markdown
+        assert markdown_url, f"{post}: Markdown alternate link missing"
+        assert f"https://dev.arman.ac{markdown_url}" in llms, f"{post}: not in llms.txt"
+        markdown = fetch(base + markdown_url)
+        assert markdown.startswith("# "), f"{markdown_url}: title heading missing"
+        assert "{:toc}" not in markdown, f"{markdown_url}: kramdown markup left in"
+        assert markdown.strip() in full, f"{markdown_url}: missing from llms-full.txt"
 
 
 if __name__ == "__main__":
