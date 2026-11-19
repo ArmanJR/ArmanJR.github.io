@@ -7,9 +7,13 @@
 /* ---------- Tokens ---------- */
 
 :root {
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-text: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  /* Each stack lists Vazirmatn after the Latin font, so Persian text in any of
+     them is set in it. */
+  --font-display: "Space Grotesk", "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
+  --font-text: "Atkinson Hyperlegible Next", "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Atkinson Hyperlegible Mono", "Vazirmatn", ui-monospace, "SF Mono", Menlo, monospace;
+  /* Body text of posts: a serif made for long reading on screens. */
+  --font-reading: "Literata", "Vazirmatn", ui-serif, Georgia, serif;
 
   --bg: #fcfcfc;
   --surface: #f2f2f1;
@@ -28,11 +32,15 @@
   --syn-type: #b23f12;
   --syn-builtin: #a3246f;
 
-  --measure: 44rem;
-  --gutter: 7rem;
+  --measure: 64rem;
+  /* Homepage post list: width of the date column left of each title. */
+  --date-col: 7rem;
   --pad: 1.25rem;
-  /* Width reserved right of the layout for the sticky table of contents. */
-  --toc-width: 15.5rem;
+  /* Space between the content and the sticky table of contents. */
+  --toc-gap: 3rem;
+  /* Width reserved right of the layout for the sticky table of contents,
+     including --toc-gap. */
+  --toc-width: calc(15.5rem + var(--toc-gap));
 
   color-scheme: light dark;
 }
@@ -143,11 +151,11 @@ a:hover {
 }
 
 /*
- * Every block is a three-column grid: a gutter on each side and the reading
- * measure in the middle. Prose, code and tables sit in the measure; only
- * figures break out into the gutters. On wide screens a post with a table of
- * contents raises the right margin's minimum (--aside) so the TOC fits there;
- * the content shifts left only as far as it has to.
+ * Every block is a three-column grid: a margin on each side and the measure
+ * in the middle. The header, footer and all content share the measure, so
+ * they line up edge to edge. On wide screens a post with a table of contents
+ * raises the right margin's minimum (--aside) so the TOC fits there; the
+ * content shifts left, then narrows, only as far as it has to.
  */
 .frame,
 .prose {
@@ -155,10 +163,8 @@ a:hover {
   align-content: start;
   grid-template-columns:
     [full-start] minmax(var(--pad), 1fr)
-    [wide-start] minmax(0, var(--gutter))
-    [text-start] min(var(--measure), 100% - 2 * var(--pad))
-    [text-end] minmax(0, var(--gutter))
-    [wide-end] minmax(var(--aside, var(--pad)), 1fr)
+    [text-start] min(var(--measure), 100% - var(--pad) - var(--aside, var(--pad)))
+    [text-end] minmax(var(--aside, var(--pad)), 1fr)
     [full-end];
 }
 
@@ -177,7 +183,7 @@ a:hover {
 
 .site-head__inner,
 .site-foot__inner {
-  grid-column: wide;
+  grid-column: text;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -235,9 +241,9 @@ a:hover {
 
 /* ---------- Homepage ---------- */
 
-/* Post list: dates hang in the left gutter so titles line up with prose. */
+/* Post list: dates sit in their own column to the left of the titles. */
 .entries {
-  grid-column: wide;
+  grid-column: text;
   list-style: none;
   margin: clamp(2.5rem, 7vw, 4.5rem) 0 0;
   padding: 0;
@@ -245,7 +251,7 @@ a:hover {
 
 .entry {
   display: grid;
-  grid-template-columns: var(--gutter) minmax(0, var(--measure));
+  grid-template-columns: var(--date-col) minmax(0, 1fr);
   padding-block: 1.5rem;
   border-top: 1px solid var(--rule);
 }
@@ -344,7 +350,7 @@ a:hover {
 .article__lede {
   margin: 1.25rem 0 0;
   color: var(--ink-2);
-  font-size: 1.1875rem;
+  font-size: 1.375rem;
   line-height: 1.55;
   text-wrap: pretty;
 }
@@ -358,6 +364,18 @@ a:hover {
 
 .prose > * {
   margin-block: 0 1.25rem;
+}
+
+/* Posts are long reads, so their text is set larger, in a reading serif.
+   Small screens step the size back down (see the end of this file). */
+.prose--post {
+  font-family: var(--font-reading);
+  font-size: 1.25rem;
+}
+
+/* The table of contents is navigation, not prose. */
+.prose--post .toc {
+  font-family: var(--font-text);
 }
 
 .prose p,
@@ -394,7 +412,7 @@ a:hover {
   font-size: 1.0625rem;
 }
 
-/* Section links, added by main.js. They sit in the left gutter. */
+/* Section links, added by main.js. They sit in the left margin. */
 .anchor {
   position: absolute;
   right: 100%;
@@ -445,8 +463,11 @@ a:hover {
   padding: 0.125rem 0 0.125rem 1.5rem;
   border-left: 3px solid color-mix(in srgb, var(--ink) 35%, transparent);
   color: var(--ink);
-  font-size: 1.125rem;
+  /* Relative, so quotes stay a step above the text around them. */
+  font-size: 1.0625em;
   font-style: italic;
+  /* Persian has no italic; keep it upright rather than faking a slant. */
+  font-synthesis-style: none;
   line-height: 1.65;
 }
 
@@ -489,7 +510,6 @@ a:hover {
 
 .prose p:has(> img:only-child),
 .prose figure {
-  grid-column: wide;
   margin-block: 2rem;
 }
 
@@ -658,22 +678,25 @@ a:hover {
 }
 
 @media (min-width: 75rem) {
-  main:has(.toc) {
+  /* Set on body so the header and footer shift with the content and stay
+     aligned with it. */
+  body:has(main .toc) {
     --aside: var(--toc-width);
   }
 
   /* main.js sets --toc-rows so the TOC's area runs to the end of the post. */
   .prose > .toc {
-    grid-column: wide-end / full-end;
+    grid-column: text-end / full-end;
     grid-row: span var(--toc-rows, 1);
     align-self: start;
     position: sticky;
     top: 2.5rem;
     z-index: 1;
-    max-width: calc(15rem + var(--pad));
+    max-width: calc(15rem + var(--toc-gap) + var(--pad));
     max-height: calc(100vh - 5rem);
     margin: 0;
     padding-right: var(--pad);
+    padding-left: var(--toc-gap);
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
@@ -725,10 +748,91 @@ a:hover {
 }
 
 .prose th {
-  font: 600 0.8125rem/1.4 var(--font-display);
+  font: 600 1rem/1.4 var(--font-display);
   color: var(--ink-2);
   border-bottom-color: var(--ink-3);
 }
+
+/* In posts, tables use the size of the text around them. */
+.prose--post table {
+  font-size: 1em;
+}
+
+/* Side-by-side comparisons (<table class="compare">), set in a bordered
+   panel so it is clear where they start and end. A labelled header bar names
+   the columns; a full-width heading row (th[colspan]) opens each group, and
+   the rows under it pair the two columns, e.g. a note in Persian and then in
+   English. */
+.prose table.compare {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  margin-block: 2rem;
+  /* Separate borders, so the panel can have rounded corners. */
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-variant-numeric: normal;
+}
+
+.prose .compare :is(th, td) {
+  padding: 0.5rem 1.5rem;
+  border-bottom: 0;
+}
+
+/* The two columns meet at a rule. */
+.prose .compare :is(th, td) + :is(th, td) {
+  border-left: 1px solid var(--rule);
+}
+
+/* Header bar with the column labels. */
+.prose .compare tr:first-child > th {
+  padding-block: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--ink);
+  font: 600 1rem/1.4 var(--font-display);
+  text-align: center;
+}
+
+.prose .compare tr:first-child > th:first-child {
+  border-top-left-radius: 5px;
+}
+
+.prose .compare tr:first-child > th:last-child {
+  border-top-right-radius: 5px;
+}
+
+/* Group heading: centred over both columns, with a rule between groups. */
+.prose .compare th[colspan] {
+  padding-block: 1.5rem 0.5rem;
+  border-top: 1px solid var(--rule);
+  color: var(--ink);
+  font: 600 1.25rem/1.8 var(--font-reading);
+  text-align: center;
+}
+
+.prose .compare tr:first-child + tr > th[colspan] {
+  border-top: 0;
+}
+
+.prose .compare tr:last-child > td {
+  padding-bottom: 1.25rem;
+}
+
+.prose .compare [dir="rtl"] {
+  text-align: right;
+  line-height: 1.9;
+}
+
+/* Vazirmatn reads smaller than Literata at the same size. */
+.prose .compare td[dir="rtl"] {
+  font-size: 1.0625em;
+}
+
 
 /* Math (KaTeX, loaded only for posts with `math: true`) */
 .prose .math-block {
@@ -967,8 +1071,24 @@ pre {
 /* ---------- Small screens ---------- */
 
 @media (max-width: 47.99rem) {
-  :root {
-    --gutter: 0rem;
+  .prose--post {
+    font-size: 1.0625rem;
+  }
+
+  .article__lede {
+    font-size: 1.1875rem;
+  }
+
+  .prose table.compare {
+    font-size: 0.9375rem;
+  }
+
+  .prose .compare :is(th, td) {
+    padding-inline: 0.75rem;
+  }
+
+  .prose .compare th[colspan] {
+    font-size: 1.125rem;
   }
 
   .entry {
