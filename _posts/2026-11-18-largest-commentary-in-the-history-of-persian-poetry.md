@@ -534,6 +534,10 @@ I’ve opened [a pull request](https://github.com/ganjoor/ganjoor-data/pull/4) t
 
 Either way, these notes are going to work. They’re the foundation of Ganjoorjoor, my search engine, along with another layer of metadata I’m generating for it behind the scenes. A meaning tells you what a couplet says. People search for what it means to them. With both, I’m going to build the most powerful search engine Persian poetry has ever had.
 
+**Update (2026-11-19):** The pull request has been merged, and every AI-generated annotation on Ganjoor has been replaced with the new ones. Read [Ganjoor’s official announcement](https://blog.ganjoor.net/1405/08/29/armanj-ai-regen/) (in Persian).
+
+**Update (2026-11-22):** All the generations are now also available as a [dataset on Hugging Face](https://huggingface.co/datasets/armanj/ganjoor-commentary).
+
 ## Thank you
 
 Beyond what came out of my own pocket, the AI credits for this project were provided by [mana.space](https://mana.space) and [zharf.ai](https://zharf.ai). I sincerely thank them for their generosity and support. Without them, this project wouldn’t have been possible.
